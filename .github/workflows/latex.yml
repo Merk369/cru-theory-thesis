@@ -1,1 +1,35 @@
+name: Build LaTeX Thesis
 
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up TeX Live
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: CRU_thesis.tex
+          latexmk_use_xelatex: true
+          extra_system_packages: "python3 python3-pip make"
+
+      - name: Install Python dependencies
+        run: |
+          pip install -r requirements.txt || true
+
+      - name: Run data + figures pipeline
+        run: make all
+
+      - name: Upload compiled thesis PDF
+        uses: actions/upload-artifact@v3
+        with:
+          name: CRU-thesis-pdf
+          path: CRU_thesis.pdf
