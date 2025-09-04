@@ -1,1 +1,42 @@
+# CRU Theory Configuration File
+# This centralizes constants, dataset paths, and figure outputs so
+# all scripts and LaTeX components reference a single source of truth.
 
+paths:
+  data: "./data"
+  figures: "./figures"
+  tables: "./tables"
+  badges: "./badges"
+  logs: "./logs"
+
+datasets:
+  uhecr_flux: "uhecr_flux.csv"
+  gw_strain: "gw_strain.csv"
+  cmb_cl_TT: "cmb_cl_TT.csv"
+  cmb_cl_EE: "cmb_cl_EE.csv"
+  dm_limits: "dm_limits.csv"
+
+figures:
+  gw_prediction: "gw_prediction.pdf"
+  cmb_power_spectrum: "cmb_power_spectrum.pdf"
+  uhecr_spectrum: "uhecr_spectrum.pdf"
+  dm_constraints: "dm_constraints.pdf"
+
+tables:
+  uhecr: "uhecr_table.tex"
+  cmb_summary: "cmb_table.tex"
+  gw_summary: "gw_table.tex"
+  dm_summary: "dm_table.tex"
+
+predictions:
+  cmb_max_chi2: 20
+  gw_expected_strain: 1.0e-22
+  uhecr_resonance_e: 5.2e19  # in eV
+  dm_sigma_si: 1.0e-48       # cm^2
+
+parameters:
+  resonance_scale: 5.0e19    # eV
+  entanglement_entropy: 23.5
+  coupling_xi: 1.0e-20
+  grav_coupling: 0.52
+  hubble_param: 1.0e14       # GeV
