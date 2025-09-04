@@ -1,1 +1,47 @@
+# CITATION.cff for CRU Theory Thesis
+# This file provides metadata so researchers can cite your work directly from GitHub.
 
+cff-version: 1.2.0
+message: >
+  If you use the CRU Theory Thesis or its datasets, code, or figures in your research,
+  please cite this repository as below.
+
+title: "Causal Resonance Unification (CRU) Theory Thesis"
+author:
+  - family-names: "Cleary"
+    given-names: "Shaun M."
+    affiliation: "University of Phoenix"
+    orcid: "https://orcid.org/0000-0000-0000-0000"  # replace with your actual ORCID if available
+  - family-names: "ChatGPT"
+    given-names: "OpenAI Assistant"
+    affiliation: "Research and Technical Collaboration"
+
+version: "1.0.0"
+date-released: "2025-09-04"
+doi: "10.5281/zenodo.0000000"  # update once you archive with Zenodo/figshare
+license: "MIT"
+
+keywords:
+  - physics
+  - quantum gravity
+  - causal resonance
+  - dark matter
+  - dark energy
+  - cosmic rays
+  - gravitational waves
+  - cosmology
+  - CRU theory
+
+repository-code: "https://github.com/<your-username>/CRU-thesis"
+url: "https://github.com/<your-username>/CRU-thesis"
+
+preferred-citation:
+  type: article
+  authors:
+    - family-names: "Cleary"
+      given-names: "Shaun M."
+  title: "Causal Resonance Unification (CRU) Theory"
+  journal: "GitHub Repository"
+  year: 2025
+  version: "1.0.0"
+  doi: "10.5281/zenodo.0000000"
