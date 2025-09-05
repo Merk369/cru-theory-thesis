@@ -1,41 +1,36 @@
-import os
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
+"""
+Generate figures/dm_limits.pdf from data/dm_limits.csv
 
-DATA_CSV = "./data/gw_strain.csv"
-OUT_PDF  = "./figures/gw_prediction.pdf"
+Expected CSV headers:
+  - mass_GeV
+  - sigma_cm2
+"""
+import pandas as pd
+import matplotlib.pyplot as plt
+from pathlib import Path
+
+DATA = Path("data/dm_limits.csv")
+OUT = Path("figures/dm_limits.pdf")
 
 def main():
-    # Load data: expect columns frequency_Hz,strain[,sigma]
-    df = pd.read_csv(DATA_CSV)
+    df = pd.read_csv(DATA)
+    for col in ["mass_GeV", "sigma_cm2"]:
+        if col not in df.columns:
+            raise ValueError(f"Missing column '{col}' in {DATA}")
 
-    if "frequency_Hz" not in df.columns or "strain" not in df.columns:
-        raise ValueError("gw_strain.csv must have columns: frequency_Hz,strain[,sigma]")
+    m = df["mass_GeV"].values
+    s = df["sigma_cm2"].values
 
-    f = df["frequency_Hz"].to_numpy(dtype=float)
-    h = df["strain"].to_numpy(dtype=float)
-    sigma = df["sigma"].to_numpy(dtype=float) if "sigma" in df.columns else None
-
-    plt.figure(figsize=(7,5))
-    plt.loglog(f, h, label="GW strain (CRU prediction)")
-
-    # Optional error band if sigma is present
-    if sigma is not None:
-        h_lo = np.clip(h - sigma, a_min=1e-99, a_max=None)
-        h_hi = h + sigma
-        plt.fill_between(f, h_lo, h_hi, alpha=0.2, label="±1σ")
-
-    plt.xlabel("Frequency [Hz]")
-    plt.ylabel("Strain")
-    plt.title("CRU Predicted Stochastic GW Background")
-    plt.grid(True, which="both", ls="--", lw=0.5, alpha=0.6)
-    plt.legend()
+    plt.figure(figsize=(7,4.2))
+    plt.loglog(m, s)
+    plt.xlabel("DM mass (GeV)")
+    plt.ylabel(r"Cross section (cm$^2$)")
+    plt.title("Dark Matter Direct-Detection Limits")
     plt.tight_layout()
-
-    os.makedirs(os.path.dirname(OUT_PDF), exist_ok=True)
-    plt.savefig(OUT_PDF)
-    print(f"Saved {OUT_PDF}")
+    OUT.parent.mkdir(parents=True, exist_ok=True)
+    plt.savefig(OUT, bbox_inches="tight")
+    plt.close()
+    print(f"Wrote {OUT}")
 
 if __name__ == "__main__":
     main()
