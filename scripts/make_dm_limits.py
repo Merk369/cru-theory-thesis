@@ -1,32 +1,36 @@
-import numpy as np
-import matplotlib.pyplot as plt
+"""
+Generate figures/dm_limits.pdf from data/dm_limits.csv
+
+Expected CSV headers:
+  - mass_GeV
+  - sigma_cm2
+"""
 import pandas as pd
-import os
+import matplotlib.pyplot as plt
+from pathlib import Path
 
-# Paths
-DATA_PATH = "./data/dm_limits.csv"
-OUTPUT_PATH = "./figures/dm_limits.pdf"
+DATA = Path("data/dm_limits.csv")
+OUT = Path("figures/dm_limits.pdf")
 
-# Load dark matter direct detection limits (mass [GeV], cross-section [cm^2])
-data = pd.read_csv(DATA_PATH)
-mass = data["mass_GeV"].values
-sigma = data["sigma_cm2"].values
-label = data.get("experiment", ["Exp"] * len(mass))
+def main():
+    df = pd.read_csv(DATA)
+    for col in ["mass_GeV", "sigma_cm2"]:
+        if col not in df.columns:
+            raise ValueError(f"Missing column '{col}' in {DATA}")
 
-# Plot
-plt.figure(figsize=(7,5))
-for exp in set(label):
-    idx = [i for i, l in enumerate(label) if l == exp]
-    plt.loglog(mass[idx], sigma[idx], marker="o", linestyle="-", label=exp)
+    m = df["mass_GeV"].values
+    s = df["sigma_cm2"].values
 
-plt.xlabel("Dark Matter Mass [GeV]")
-plt.ylabel(r"SI Cross-section [$cm^2$]")
-plt.title("Dark Matter Direct Detection Limits")
-plt.legend()
-plt.grid(True, which="both", ls="--", lw=0.5, alpha=0.6)
-plt.tight_layout()
+    plt.figure(figsize=(7,4.2))
+    plt.loglog(m, s)
+    plt.xlabel("DM mass (GeV)")
+    plt.ylabel(r"Cross section (cm$^2$)")
+    plt.title("Dark Matter Direct-Detection Limits")
+    plt.tight_layout()
+    OUT.parent.mkdir(parents=True, exist_ok=True)
+    plt.savefig(OUT, bbox_inches="tight")
+    plt.close()
+    print(f"Wrote {OUT}")
 
-# Ensure output folder exists
-os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
-plt.savefig(OUTPUT_PATH)
-print(f"Saved figure to {OUTPUT_PATH}")
+if __name__ == "__main__":
+    main()
