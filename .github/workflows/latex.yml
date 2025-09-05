@@ -1,35 +1,68 @@
-name: Build LaTeX Thesis
+name: Build CRU Thesis PDF
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "**" ]
   pull_request:
+    branches: [ "**" ]
+  workflow_dispatch:
 
 jobs:
-  build:
+  build-pdf:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - name: Checkout repo
+      - uses: actions/checkout@v4
 
-      - name: Set up TeX Live
+      # Optional: use your TeX package list if present
+      - name: Read TeX package list (optional)
+        id: tlpkgs
+        shell: bash
+        run: |
+          if [ -f texlive.packages.txt ]; then
+            echo "has_list=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_list=false" >> $GITHUB_OUTPUT
+          fi
+
+      # Compile with latexmk via LaTeX Action (handles caching & biber/bibtex)
+      - name: Build PDF with latexmk
         uses: xu-cheng/latex-action@v3
         with:
           root_file: CRU_thesis.tex
-          latexmk_use_xelatex: true
-          extra_system_packages: "python3 python3-pip make"
+          latexmk_use_xelatex: false
+          latexmk_shell_escape: false
+          # If you use biblatex+biber, set 'extra_system_packages: biber' and add 'args: -pdf -shell-escape'
+          # args lets you override; by default the action runs latexmk -pdf -file-line-error -halt-on-error
+          args: -pdf -interaction=nonstopmode -file-line-error
+          # Install specific TeX Live packages if you keep a list in the repo
+          # (Action auto-installs needed packages; this is only to be explicit)
+          pre_compile: |
+            if [ "${{ steps.tlpkgs.outputs.has_list }}" = "true" ]; then
+              sudo tlmgr update --self || true
+              while read -r pkg; do
+                [ -z "$pkg" ] && continue
+                sudo tlmgr install "$pkg" || true
+              done < texlive.packages.txt
+            fi
 
-      - name: Install Python dependencies
-        run: |
-          pip install -r requirements.txt || true
-
-      - name: Run data + figures pipeline
-        run: make all
-
-      - name: Upload compiled thesis PDF
-        uses: actions/upload-artifact@v3
+      - name: Upload PDF artifact
+        uses: actions/upload-artifact@v4
         with:
-          name: CRU-thesis-pdf
+          name: CRU_thesis
           path: CRU_thesis.pdf
+          if-no-files-found: error
+
+      # Optional: keep latexmk logs as an artifact for debugging failed builds
+      - name: Upload LaTeX logs (optional)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: latex-logs
+          path: |
+            *.log
+            *.blg
+            *.bcf
+            *.aux
+            build/**
