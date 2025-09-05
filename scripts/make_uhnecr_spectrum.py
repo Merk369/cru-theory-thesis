@@ -1,41 +1,36 @@
-import os
+"""
+Generate figures/unhecr_spectrum.pdf from data/unhecr_flux.csv
+
+Expected CSV headers:
+  - energy_eV
+  - flux
+"""
 import pandas as pd
 import matplotlib.pyplot as plt
+from pathlib import Path
 
-DATA_CSV = "./data/uhecr_flux.csv"
-OUT_PDF  = "./figures/uhecr_spectrum.pdf"
+DATA = Path("data/unhecr_flux.csv")
+OUT = Path("figures/unhecr_spectrum.pdf")
 
 def main():
-    # Load dataset
-    df = pd.read_csv(DATA_CSV)
+    df = pd.read_csv(DATA)
+    for col in ["energy_eV", "flux"]:
+        if col not in df.columns:
+            raise ValueError(f"Missing column '{col}' in {DATA}")
 
-    required_cols = {"log10E_eV", "flux", "sigma_stat", "sigma_sys"}
-    if not required_cols.issubset(df.columns):
-        raise ValueError(f"uhecr_flux.csv must have columns: {required_cols}")
+    E = df["energy_eV"].values
+    F = df["flux"].values
 
-    E = df["log10E_eV"].to_numpy()
-    J = df["flux"].to_numpy()
-    stat = df["sigma_stat"].to_numpy()
-    sys = df["sigma_sys"].to_numpy()
-
-    # Plot
-    plt.figure(figsize=(7,5))
-    plt.errorbar(E, J, yerr=stat, fmt="o", color="navy", label="UHECR flux (CRU data)")
-
-    # Optional shaded systematics
-    plt.fill_between(E, J - sys, J + sys, alpha=0.2, color="red", label="±sys")
-
-    plt.yscale("log")
-    plt.xlabel(r"$\log_{10}(E/\mathrm{eV})$")
-    plt.ylabel(r"$J(E)$ [eV$^{-1}$ m$^{-2}$ s$^{-1}$ sr$^{-1}$]")
-    plt.title("CRU Predicted UHECR Spectrum")
-    plt.grid(True, which="both", ls="--", lw=0.5, alpha=0.6)
-    plt.legend()
+    plt.figure(figsize=(7,4.2))
+    plt.loglog(E, F)
+    plt.xlabel("Energy (eV)")
+    plt.ylabel("Flux (arb. units)")
+    plt.title("Ultra-High-Energy Cosmic Ray Spectrum")
     plt.tight_layout()
-
-    os.makedirs(os.path.dirname(OUT_PDF), exist_ok=True)
-    plt.savefig(OUT_PDF)
-    print(f"Saved {OUT_PDF}")
+    OUT.parent.mkdir(parents=True, exist_ok=True)
+    plt.savefig(OUT, bbox_inches="tight")
+    plt.close()
+    print(f"Wrote {OUT}")
 
 if __name__ == "__main__":
     main()
