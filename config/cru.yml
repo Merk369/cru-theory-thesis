@@ -1,42 +1,47 @@
-# CRU Theory Configuration File
-# This centralizes constants, dataset paths, and figure outputs so
-# all scripts and LaTeX components reference a single source of truth.
+# CRU Thesis Configuration File
+# Central settings for data paths, figure outputs, and reproducibility
+
+project:
+  name: "Causal Resonance Unification (CRU) Thesis"
+  version: "1.0.0"
+  description: >
+    Repository structure and build configuration for the CRU thesis.
+    All paths and outputs defined here are used by scripts and CI.
 
 paths:
-  data: "./data"
-  figures: "./figures"
-  tables: "./tables"
-  badges: "./badges"
-  logs: "./logs"
+  data: "data/"
+  figures: "figures/"
+  tables: "tables/"
+  scripts: "scripts/"
+  tests: "tests/"
+  thesis: "CRU_thesis.tex"
 
-datasets:
-  uhecr_flux: "uhecr_flux.csv"
-  gw_strain: "gw_strain.csv"
-  cmb_cl_TT: "cmb_cl_TT.csv"
-  cmb_cl_EE: "cmb_cl_EE.csv"
-  dm_limits: "dm_limits.csv"
+build:
+  latex_engine: "pdflatex"
+  bib_tool: "bibtex"
+  output_pdf: "CRU_thesis.pdf"
 
-figures:
-  gw_prediction: "gw_prediction.pdf"
-  cmb_power_spectrum: "cmb_power_spectrum.pdf"
-  uhecr_spectrum: "uhecr_spectrum.pdf"
-  dm_constraints: "dm_constraints.pdf"
+ci:
+  workflows:
+    - ".github/workflows/latex.yml"
+    - ".github/workflows/python.yml"
 
-tables:
-  uhecr: "uhecr_table.tex"
-  cmb_summary: "cmb_table.tex"
-  gw_summary: "gw_table.tex"
-  dm_summary: "dm_table.tex"
-
-predictions:
-  cmb_max_chi2: 20
-  gw_expected_strain: 1.0e-22
-  uhecr_resonance_e: 5.2e19  # in eV
-  dm_sigma_si: 1.0e-48       # cm^2
-
-parameters:
-  resonance_scale: 5.0e19    # eV
-  entanglement_entropy: 23.5
-  coupling_xi: 1.0e-20
-  grav_coupling: 0.52
-  hubble_param: 1.0e14       # GeV
+checks:
+  figures_required:
+    - "figures/cmb_power_spectrum.pdf"
+    - "figures/dm_limits.pdf"
+    - "figures/gw_prediction.pdf"
+    - "figures/unhecr_spectrum.pdf"
+    - "figures/cru_resonance_spectrum_basic.png"
+    - "figures/cru_resonance_spectrum_full.png"
+    - "figures/cru_cosmo_constraints.png"
+    - "figures/cru_roadmap_flowchart.png"
+    - "figures/cru_falsification_tree.png"
+    - "figures/cru_noise_vs_signal.png"
+    - "figures/cru_master_map.png"
+  tables_required:
+    - "tables/resonant_anchors.tex"
+    - "tables/verification_table.tex"
+    - "tables/cosmo_constraints.tex"
+    - "tables/experimental_protocols.tex"
+    - "tables/unhecr_table.tex"
